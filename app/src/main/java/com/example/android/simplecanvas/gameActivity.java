@@ -18,7 +18,6 @@ import com.example.android.simplecanvas.view.GridView;
 public class gameActivity extends AppCompatActivity {
    public static int X;
    public static int Y;
-    GridView gridView;
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {

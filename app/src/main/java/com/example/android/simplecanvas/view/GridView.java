@@ -18,6 +18,8 @@ import androidx.core.content.ContextCompat;
 import com.example.android.simplecanvas.R;
 import com.example.android.simplecanvas.gameActivity;
 
+import java.text.DecimalFormat;
+
 public class GridView extends View {
 
     Paint dot;
@@ -25,19 +27,19 @@ public class GridView extends View {
     Paint box;
     int rows= gameActivity.Y;
     int columns=gameActivity.X;
-    float[][] xcoord = new float[rows+1][columns+1];
-    float[][] ycoord = new float[rows+1][columns+1];
-    float xnear1;
-    float ynear1;
-    float xnear2;
-    float ynear2;
+    double[][] xcoord = new double[rows+1][columns+1];
+    double[][] ycoord = new double[rows+1][columns+1];
+    int xnear1;
+    int ynear1;
+    int xnear2;
+    int ynear2;
     Bitmap myBitmap;
     Canvas canvas;
-    float[] xdotselected= new float[(rows>=columns)?4*(rows+1)*(rows):4*(columns+1)*(columns)];
-    float[] ydotselected= new float[(rows>=columns)?4*(rows+1)*(rows):4*(columns+1)*(columns)];
+    double[] xdotselected= new double[(rows>=columns)?4*(rows+1)*(rows):4*(columns+1)*(columns)];
+    double[] ydotselected= new double[(rows>=columns)?4*(rows+1)*(rows):4*(columns+1)*(columns)];
     int k=0;
-    float columnwidth;
-    float rowwidth;
+    double columnwidth;
+    double rowwidth;
 
     public GridView(Context context) {
         super(context);
@@ -72,7 +74,7 @@ public class GridView extends View {
         dot.setColor(resources.getColor(R.color.colorDot));
         line= new Paint();
         line.setColor(Color.BLACK);
-        line.setStrokeWidth(5);
+        line.setStrokeWidth(7);
         box= new Paint();
         box.setColor(resources.getColor(R.color.colorDot));
         box.setStyle(Paint.Style.FILL);
@@ -85,8 +87,8 @@ public class GridView extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         myBitmap= Bitmap.createBitmap(w,h,Bitmap.Config.ARGB_8888);
         canvas=new Canvas(myBitmap);
-        rowwidth= (float)h / (columns + 1);
-        columnwidth= (float)w/(rows + 1);
+        rowwidth= (double) h / (columns+1);
+        columnwidth= (double) w/(rows+1);
 
     }
 
@@ -98,8 +100,7 @@ public class GridView extends View {
     @Override
     protected void onDraw(Canvas canvas)
     {
-        final int height= getMeasuredHeight();
-        final int width = getMeasuredWidth();
+
           canvas.drawBitmap(myBitmap,0,0,null);
        // if((Math.sqrt(((xnear1-xnear2)*(xnear1-xnear2))+((ynear1-ynear2)*(ynear1-ynear2)))== width /((rows + 1))||(Math.sqrt(((xnear1-xnear2)*(xnear1-xnear2))+((ynear1-ynear2)*(ynear1-ynear2)))==(height/(columns + 1)))))
 //     if(Math.abs(xnear1-xnear2)==(float) (width /(rows + 1))||Math.abs(ynear1-ynear2)==(float)(height/(columns + 1)))
@@ -108,9 +109,9 @@ public class GridView extends View {
         for(int i=1; i<= rows; i++)
         {
             for(int j=1; j<=columns; j++) {
-                canvas.drawCircle((float)i * columnwidth, (float) j * rowwidth, 7, dot);
-                xcoord[i][j]= (float) i * columnwidth;
-                ycoord[i][j]= (float) j * rowwidth;
+                canvas.drawCircle(i * (float)columnwidth,  j * (float)rowwidth, 7, dot);
+                xcoord[i][j]= (double) i * columnwidth;
+                ycoord[i][j]= (double) j * rowwidth;
             }
 
         }
@@ -139,8 +140,8 @@ public class GridView extends View {
 
                     if((Math.abs(xcoord[i][j]-event.getX())<  columnwidth/2  &&(Math.abs(ycoord[i][j]-event.getY()))< rowwidth/2))
                     {
-                        xnear1 = xcoord[i][j];
-                        ynear1 = ycoord[i][j];
+                        xnear1 = i;
+                        ynear1 = j;
 
 
                     }
@@ -155,8 +156,8 @@ public class GridView extends View {
                 for(int j=1; j<=columns; j++) {
 
                     if((Math.abs(xcoord[i][j]-event.getX())<  columnwidth/2 &&(Math.abs(ycoord[i][j]-event.getY()))< rowwidth/2)) {
-                        xnear2 = xcoord[i][j];
-                        ynear2 = ycoord[i][j];
+                        xnear2 = i;
+                        ynear2 = j;
 
                     }
 
@@ -167,6 +168,7 @@ public class GridView extends View {
                 if((xdotselected[a]==xnear1&&ydotselected[a]==ynear1&&xdotselected[a+1]==xnear2&&ydotselected[a+1]==ynear2)||(xdotselected[a+1]==xnear1&&ydotselected[a+1]==ynear1&&xdotselected[a]==xnear2&&ydotselected[a]==ynear2))
                 {
                  flag1=1;
+                 break;
                 }
             }
             if(flag1==0) {
@@ -176,194 +178,152 @@ public class GridView extends View {
                 xdotselected[k] = xnear2;
                 ydotselected[k] = ynear2;
                 k++;
+                checkboxformed(xnear1,xnear2,ynear1,ynear2);
+
+
+                if(((Math.abs(xcoord[xnear1][ynear1]-xcoord[xnear2][ynear2]))<=columnwidth+0.00005&&(Math.abs(xcoord[xnear1][ynear1]-xcoord[xnear2][ynear2]))>=columnwidth-0.00005)||((Math.abs(ycoord[xnear1][ynear1]-ycoord[xnear2][ynear2]))<=rowwidth+0.00005&&(Math.abs(ycoord[xnear1][ynear1]-ycoord[xnear2][ynear2]))>=rowwidth-0.00005)) {
+                    if ((xnear1 == xnear2) || (ynear1 == ynear2)) {
+                        canvas.drawLine((float)xcoord[xnear1][ynear1],(float) ycoord[xnear1][ynear1], (float)xcoord[xnear2][ynear2],(float)ycoord[xnear2][ynear2], line);
+                    }
+                }
+                invalidate();
             }
-            checkboxformed(xnear1,xnear2,ynear1,ynear2);
-
-            if((Math.abs(xnear1-xnear2)==columnwidth)||(Math.abs(ynear1-ynear2)==rowwidth))
-               if((xnear1==xnear2)||(ynear1==ynear2))
-            canvas.drawLine(xnear1,ynear1,xnear2,ynear2,line);
-            invalidate();
-
-
 
 
         }
 
         return true;
     }
-    void checkboxformed(float xnear1,float xnear2,float ynear1,float ynear2)
+    void checkboxformed(int xnear1,int xnear2,int ynear1,int ynear2)
     {
-        int flag1=0,flag2=0,flag3=0,flag4=0;
-        int lflag1 =0, lflag2=0,lflag3=0;
-        int[] points= new int[4];
+        int flag1=0;
+        int flag2=0;
+        int flag3=0;
+        int flag4=0;
+        int flag5=0;
+        int flag6=0;
         if(xnear1==xnear2)
         {
-//          for(int a=1; a<=k;a++)
-//          {
-//              if(xdotselected[a]==xnear1&&ydotselected[a]==ynear1)
-//                  for(int b=1; b<=k;b++)
-//                      if(xdotselected[b]==xnear2&&ydotselected[b]==ynear2)
-//                          for(int c=1;c<=k;c++)
-//                              if((xdotselected[c]==xnear1+rowwidth && ydotselected[c]==ynear1)||(xdotselected[c]==xnear1-rowwidth && ydotselected[c]==ynear1))
-            for(int a=0; a<=k;a++)
+
+            for(int i=0;i<k;i+=2)
             {
-                if(xdotselected[a]==xnear1&&ydotselected[a]==ynear1) {
-                    flag1 = 1;
-                    points[0]=a;
+                //Top left And  Bottom left edge
+                if(((xdotselected[i]==xnear1)&&(ydotselected[i]==ynear1)&&(xdotselected[i+1]==xnear1-1)&&(ydotselected[i+1]==ynear1))||((xdotselected[i+1]==xnear1)&&(ydotselected[i+1]==ynear1)&&(xdotselected[i]==xnear1-1)&&(ydotselected[i]==ynear1))){
+                    flag1=1;
                 }
-                if(xdotselected[a]==xnear2&&ydotselected[a]==ynear2){
+                if(((xdotselected[i]==xnear2)&&(ydotselected[i]==ynear2)&&(xdotselected[i+1]==xnear2-1)&&(ydotselected[i+1]==ynear2))||((xdotselected[i+1]==xnear2)&&(ydotselected[i+1]==ynear2)&&(xdotselected[i]==xnear2-1)&&(ydotselected[i]==ynear2))){
                     flag2=1;
-                    points[1]=a;
                 }
-                if((xdotselected[a]==xnear1+columnwidth && ydotselected[a]==ynear1)||(xdotselected[a]==xnear1-columnwidth && ydotselected[a]==ynear1)) {
-                    if(a%2==0) {
-                        if (((xdotselected[a + 1] == xdotselected[a] ) && (ydotselected[a + 1]+rowwidth == ydotselected[a])) || ((xdotselected[a + 1]== xdotselected[a] ) && (ydotselected[a + 1] -rowwidth == ydotselected[a] ))) {
-                            flag3 = 1;
-                            points[2] = a;
-                        }
-                    }
-                    else {
-                            if (((xdotselected[a - 1]  == xdotselected[a]) && (ydotselected[a - 1]+rowwidth == ydotselected[a])) || ((xdotselected[a - 1] == xdotselected[a] ) && (ydotselected[a - 1]-rowwidth == ydotselected[a] ))) {
-                                flag3 = 1;
-                                points[2] = a;
-                            }
-                        }
+                //Left edge
+                if(((xdotselected[i]==xnear1-1)&&(ydotselected[i]==ynear1)&&(xdotselected[i+1]==xnear2-1)&&(ydotselected[i+1]==ynear2))||((xdotselected[i+1]==xnear1-1)&&(ydotselected[i+1]==ynear1)&&(xdotselected[i]==xnear2-1)&&(ydotselected[i]==ynear2))){
+                    flag3=1;
                 }
 
-                if((xdotselected[a]==xnear2+columnwidth && ydotselected[a]==ynear2)||(xdotselected[a]==xnear2-columnwidth && ydotselected[a]==ynear2)){
-                    if(a%2==0) {
-                        if (((xdotselected[a + 1] == xdotselected[a]) && (ydotselected[a + 1] +rowwidth== ydotselected[a])) || ((xdotselected[a + 1] == xdotselected[a]) && (ydotselected[a + 1] -rowwidth == ydotselected[a] ))) {
-                            flag4 = 1;
-                            points[3] = a;
-                        }
-                    }
-                    else {
-                            if (((xdotselected[a - 1] == xdotselected[a] ) && (ydotselected[a - 1] +rowwidth== ydotselected[a] )) || ((xdotselected[a - 1] == xdotselected[a] ) && (ydotselected[a - 1] -rowwidth == ydotselected[a] ))) {
-                                flag4 = 1;
-                                points[3] = a;
-                            }
-                        }
+                //Top right And Bottom right edge
+                if(((xdotselected[i]==xnear1)&&(ydotselected[i]==ynear1)&&(xdotselected[i+1]==xnear1+1)&&(ydotselected[i+1]==ynear1))||((xdotselected[i+1]==xnear1)&&(ydotselected[i+1]==ynear1)&&(xdotselected[i]==xnear1+1)&&(ydotselected[i]==ynear1))){
+                    flag4=1;
+                }
+                if(((xdotselected[i]==xnear2)&&(ydotselected[i]==ynear2)&&(xdotselected[i+1]==xnear2+1)&&(ydotselected[i+1]==ynear2))||((xdotselected[i+1]==xnear2)&&(ydotselected[i+1]==ynear2)&&(xdotselected[i]==xnear2+1)&&(ydotselected[i]==ynear2))){
+                    flag5=1;
+                }
 
+                //Right edge
+                if(((xdotselected[i]==xnear1+1)&&(ydotselected[i]==ynear1)&&(xdotselected[i+1]==xnear2+1)&&(ydotselected[i+1]==ynear2))||((xdotselected[i+1]==xnear1+1)&&(ydotselected[i+1]==ynear1)&&(xdotselected[i]==xnear2+1)&&(ydotselected[i]==ynear2))) {
+                    flag6 = 1;
                 }
             }
 
-            if(flag1==1&&flag2==1&&flag3==1&&flag4==1)
-
-                for(int b=0; b<k;b=b+2) {
-                    if ((xdotselected[b] ==xdotselected[points[2]] ) && (ydotselected[points[2]] == ydotselected[b])&&(xdotselected[b+1]==xdotselected[points[3]])&&(ydotselected[b+1]==ydotselected[points[3]]) )
-                        lflag1 = 1;
-                    else if (( xdotselected[b+1]==xdotselected[points[2]] ) && (ydotselected[points[2]] == ydotselected[b+1])&&(xdotselected[b]==xdotselected[points[3]])&&(ydotselected[b]==ydotselected[points[3]]) )
-                        lflag1 = 1;
-
-                    if((xnear1 == xdotselected[b]) && (ynear1== ydotselected[b])&&(xdotselected[b+1]==xdotselected[points[2]])&&(ydotselected[b+1]==ydotselected[points[2]]))
-                        lflag2=1;
-                    else if((xnear1 == xdotselected[b+1]) && (ynear1== ydotselected[b+1])&&(xdotselected[b]==xdotselected[points[2]])&&(ydotselected[b]==ydotselected[points[2]]))
-                        lflag2=1;
-
-                    if((xnear2 == xdotselected[b]) && (ynear2== ydotselected[b])&&(xdotselected[b+1]==xdotselected[points[3]])&&(ydotselected[b+1]==ydotselected[points[3]]))
-                        lflag3=1;
-                    else if((xnear2 == xdotselected[b+1]) && (ynear2== ydotselected[b+1])&&(xdotselected[b]==xdotselected[points[3]])&&(ydotselected[b]==ydotselected[points[3]]))
-                        lflag3=1;
+            //Left box
+            if((flag1==1)&&(flag2==1)&&(flag3==1)){
+                if(ynear1<ynear2) {
+                    canvas.drawRect((float) xcoord[xnear1 - 1][ynear1], (float) ycoord[xnear1 - 1][ynear1] , (float) xcoord[xnear2][ynear2] , (float) ycoord[xnear2][ynear2], box);
                 }
+                else {
+                    canvas.drawRect((float) xcoord[xnear2 - 1][ynear2], (float) ycoord[xnear2 - 1][ynear2] , (float) xcoord[xnear1][ynear1] , (float) ycoord[xnear1][ynear1] , box);
+                }
+                canvas.drawLine((float)xcoord[xnear1][ynear1],(float) ycoord[xnear1][ynear1], (float)xcoord[xnear1-1][ynear1],(float)ycoord[xnear1-1][ynear1], line);
+                canvas.drawLine((float)xcoord[xnear2][ynear2],(float) ycoord[xnear2][ynear2], (float)xcoord[xnear2-1][ynear2],(float)ycoord[xnear2-1][ynear2], line);
+                canvas.drawLine((float)xcoord[xnear1-1][ynear1],(float) ycoord[xnear1-1][ynear1], (float)xcoord[xnear2-1][ynear2],(float)ycoord[xnear2-1][ynear2], line);
 
-
-
-              if(flag1==1&&flag2==1&&flag3==1&&flag4==1&&lflag1==1&&lflag2==1&&lflag3==1){
-                  if(ynear1<ynear2)
-                        if(xdotselected[points[2]]<xnear1)
-                            canvas.drawRect(xdotselected[points[2]]+3,ynear1+3, xnear2-2 ,ynear2-2,box);
-                        else
-                            canvas.drawRect(xnear1+3,ynear1+3,xdotselected[points[3]]-2 ,ynear2-2,box);
-
-                else
-                    if(xdotselected[points[3]]<xnear2)
-                        canvas.drawRect(xdotselected[points[3]]+3,ynear2+3, xnear1-2 ,ynear1-2,box);
-                    else
-                        canvas.drawRect(xnear2+3,ynear2+3,xdotselected[points[2]]-2 ,ynear1-2,box);
             }
+
+            //Right box
+            if((flag4==1)&&(flag5==1)&&(flag6==1)){
+                if(ynear1<ynear2){
+                    canvas.drawRect((float) xcoord[xnear1][ynear1], (float) ycoord[xnear1][ynear1], (float) xcoord[xnear2+1][ynear2] , (float) ycoord[xnear2+1][ynear2], box);
+                }
+                else {
+                    canvas.drawRect((float) xcoord[xnear2][ynear2], (float) ycoord[xnear2][ynear2], (float) xcoord[xnear1 + 1][ynear1] , (float) ycoord[xnear1 + 1][ynear1] , box);
+                }
+                canvas.drawLine((float)xcoord[xnear1][ynear1],(float) ycoord[xnear1][ynear1], (float)xcoord[xnear1+1][ynear1+1],(float)ycoord[xnear1+1][ynear1], line);
+                canvas.drawLine((float)xcoord[xnear2][ynear2],(float) ycoord[xnear2][ynear2], (float)xcoord[xnear2+1][ynear2],(float)ycoord[xnear2+1][ynear2], line);
+                canvas.drawLine((float)xcoord[xnear1+1][ynear1],(float) ycoord[xnear1+1][ynear1], (float)xcoord[xnear2+1][ynear2],(float)ycoord[xnear2+1][ynear2], line);
+            }
+
+
+
+
 
         }
 
         else if(ynear1==ynear2)
         {
-            for(int a=0; a<=k;a++)
-            {
-                if(xdotselected[a]==xnear1&&ydotselected[a]==ynear1) {
-                    flag1 = 1;
-                    points[0]=a;
+
+
+            for(int i=0;i<k;i+=2) {
+                //Top left And  Top Right edge
+                if (((xdotselected[i]==xnear1)&&(ydotselected[i]==ynear1)&&(xdotselected[i+1]==xnear1)&&(ydotselected[i+1]==ynear1-1))||((xdotselected[i+1]==xnear1)&&(ydotselected[i+1]==ynear1)&&(xdotselected[i]==xnear1)&&(ydotselected[i]==ynear1-1))){
+                    flag1=1;
                 }
-                if(xdotselected[a]==xnear2&&ydotselected[a]==ynear2){
+                if (((xdotselected[i]==xnear2)&&(ydotselected[i]==ynear2)&&(xdotselected[i+1]==xnear2)&&(ydotselected[i+1]==ynear2-1))||((xdotselected[i+1]==xnear2)&&(ydotselected[i+1]==ynear2)&&(xdotselected[i]==xnear2)&&(ydotselected[i]==ynear2-1))){
                     flag2=1;
-                    points[1]=a;
-                }
-                if((xdotselected[a]==xnear1 && ydotselected[a]==ynear1+rowwidth)||(xdotselected[a]==xnear1 && ydotselected[a]==ynear1-rowwidth)) {
-                    if(a%2==0) {
-                        if (((xdotselected[a + 1]+ columnwidth == xdotselected[a]) && (ydotselected[a + 1] == ydotselected[a] )) || ((xdotselected[a + 1]-columnwidth == xdotselected[a] ) && (ydotselected[a + 1]  == ydotselected[a]))) {
-                            flag3 = 1;
-                            points[2] = a;
-                        }
-                    }
-                    else {
-                            if (((xdotselected[a - 1] + columnwidth== xdotselected[a]) && (ydotselected[a - 1] == ydotselected[a])) || ((xdotselected[a - 1]-columnwidth  == xdotselected[a]) && (ydotselected[a - 1]== ydotselected[a] ))) {
-                                flag3 = 1;
-                                points[2] = a;
-                            }
-                        }
                 }
 
-                if((xdotselected[a]==xnear2 && ydotselected[a]==ynear2+rowwidth)||(xdotselected[a]==xnear2 && ydotselected[a]==ynear2-rowwidth)){
-                    if(a%2==0) {
-                        if (((xdotselected[a + 1] + columnwidth== xdotselected[a]) && (ydotselected[a + 1]  == ydotselected[a])) || ((xdotselected[a + 1]-columnwidth== xdotselected[a] ) && (ydotselected[a + 1] == ydotselected[a] ))) {
-                            flag4 = 1;
-                            points[3] = a;
-                        }
-                    }
-                    else {
-                            if (((xdotselected[a - 1]+ columnwidth== xdotselected[a] ) && (ydotselected[a - 1] == ydotselected[a])) || (xdotselected[a - 1]-columnwidth == xdotselected[a]) && (ydotselected[a - 1] == ydotselected[a] )) {
-                                flag4 = 1;
-                                points[3] = a;
-                            }
-                        }
+                //Topmost edge
+                if (((xdotselected[i] == xnear1) && (ydotselected[i] == ynear1-1) && (xdotselected[i + 1] == xnear2) && (ydotselected[i + 1] == ynear2-1)) || ((xdotselected[i + 1] == xnear1) && (ydotselected[i + 1] == ynear1 - 1) && (xdotselected[i] == xnear2) && (ydotselected[i] == ynear2 - 1))) {
+                    flag3=1;
+                }
+
+                //Bottom left and Bottom right edge
+                if(((xdotselected[i]==xnear1)&&(ydotselected[i]==ynear1)&&(xdotselected[i+1]==xnear1)&&(ydotselected[i+1]==ynear1+1))||((xdotselected[i+1]==xnear1)&&(ydotselected[i+1]==ynear1)&&(xdotselected[i]==xnear1)&&(ydotselected[i]==ynear1+1))){
+                    flag4=1;
+                }
+                if(((xdotselected[i]==xnear2)&&(ydotselected[i]==ynear2)&&(xdotselected[i+1]==xnear2)&&(ydotselected[i+1]==ynear2+1))||((xdotselected[i+1]==xnear2)&&(ydotselected[i+1]==ynear2)&&(xdotselected[i]==xnear2)&&(ydotselected[i]==ynear2+1))){
+                    flag5=1;
+                }
+
+                //Bottommost edge
+                if(((xdotselected[i]==xnear1)&&(ydotselected[i]==ynear1+1)&&(xdotselected[i+1]==xnear2)&&(ydotselected[i+1]==ynear2+1))||((xdotselected[i+1]==xnear1)&&(ydotselected[i+1]==ynear1+1)&&(xdotselected[i]==xnear2)&&(ydotselected[i]==ynear2+1))){
+                    flag6=1;
                 }
 
             }
+            //Top box
+            if((flag1==1)&&(flag2==1)&&(flag3==1)){
+                if(xnear1<xnear2){
+                    canvas.drawRect((float) xcoord[xnear1][ynear1-1], (float) ycoord[xnear1][ynear1-1], (float) xcoord[xnear2][ynear2] , (float) ycoord[xnear2][ynear2], box);
+                }
+                else{
+                    canvas.drawRect((float) xcoord[xnear2][ynear2-1], (float) ycoord[xnear2][ynear2-1], (float) xcoord[xnear1][ynear1] , (float) ycoord[xnear1][ynear1], box);
+                }
+                canvas.drawLine((float)xcoord[xnear1][ynear1],(float) ycoord[xnear1][ynear1], (float)xcoord[xnear1][ynear1-1],(float)ycoord[xnear1][ynear1-1], line);
+                canvas.drawLine((float)xcoord[xnear2][ynear2],(float) ycoord[xnear2][ynear2], (float)xcoord[xnear2][ynear2-1],(float)ycoord[xnear2][ynear2-1], line);
+                canvas.drawLine((float)xcoord[xnear1][ynear1-1],(float) ycoord[xnear1][ynear1-1], (float)xcoord[xnear2][ynear2-1],(float)ycoord[xnear2][ynear2-1], line);
 
-            if(flag1==1&&flag2==1&&flag3==1&&flag4==1)
-
-            for(int b=0; b<k;b=b+2) {
-                if ((xdotselected[points[2]] == xdotselected[b]) && (ydotselected[points[2]] == ydotselected[b])&&(xdotselected[b+1]==xdotselected[points[3]])&&(ydotselected[b+1]==ydotselected[points[3]]) )
-                    lflag1 = 1;
-                else if ((xdotselected[points[2]] == xdotselected[b+1]) && (ydotselected[points[2]] == ydotselected[b+1])&&(xdotselected[b]==xdotselected[points[3]])&&(ydotselected[b]==ydotselected[points[3]]) )
-                    lflag1 = 1;
-
-                if((xnear1 == xdotselected[b]) && (ynear1== ydotselected[b])&&(xdotselected[b+1]==xdotselected[points[2]])&&(ydotselected[b+1]==ydotselected[points[2]]))
-                    lflag2=1;
-                else if((xnear1 == xdotselected[b+1]) && (ynear1== ydotselected[b+1])&&(xdotselected[b]==xdotselected[points[2]])&&(ydotselected[b]==ydotselected[points[2]]))
-                    lflag2=1;
-
-                if((xnear2 == xdotselected[b]) && (ynear2== ydotselected[b])&&(xdotselected[b+1]==xdotselected[points[3]])&&(ydotselected[b+1]==ydotselected[points[3]]))
-                    lflag3=1;
-                else if((xnear2 == xdotselected[b+1]) && (ynear2== ydotselected[b+1])&&(xdotselected[b]==xdotselected[points[3]])&&(ydotselected[b]==ydotselected[points[3]]))
-                    lflag3=1;
+            }
+            //Bottom box
+            if((flag4==1)&&(flag5==1)&&(flag6==1)){
+                if(xnear1<xnear2){
+                    canvas.drawRect((float) xcoord[xnear1][ynear1], (float) ycoord[xnear1][ynear1], (float) xcoord[xnear2][ynear2+1] , (float) ycoord[xnear2][ynear2+1], box);
+                }
+                else {
+                    canvas.drawRect((float) xcoord[xnear2][ynear2], (float) ycoord[xnear2][ynear2], (float) xcoord[xnear1][ynear1 + 1], (float) ycoord[xnear1][ynear1 + 1], box);
+                }
+                canvas.drawLine((float)xcoord[xnear1][ynear1],(float) ycoord[xnear1][ynear1], (float)xcoord[xnear1][ynear1+1],(float)ycoord[xnear1][ynear1+1], line);
+                canvas.drawLine((float)xcoord[xnear2][ynear2],(float) ycoord[xnear2][ynear2], (float)xcoord[xnear2][ynear2+1],(float)ycoord[xnear2][ynear2+1], line);
+                canvas.drawLine((float)xcoord[xnear1][ynear1+1],(float) ycoord[xnear1][ynear1+1], (float)xcoord[xnear2][ynear2+1],(float)ycoord[xnear2][ynear2+1], line);
             }
 
-
-
-
-            if(flag1==1&&flag2==1&&flag3==1&&flag4==1&&lflag1==1&&lflag2==1&&lflag3==1)
-            {
-                if(xnear1<xnear2)
-                    if(ydotselected[points[2]]<ynear1)
-                        canvas.drawRect(xnear1+3,ydotselected[points[2]]+3, xnear2-2 ,ynear2-2,box);
-                    else
-                        canvas.drawRect(xnear1+3,ynear1+3, xnear2-2,ydotselected[points[3]]-2,box);
-
-                else
-                    if(ydotselected[points[3]]<ynear2)
-                    canvas.drawRect(xnear2+3,ydotselected[points[3]]+3, xnear1-2 ,ynear1-2,box);
-                    else
-                    canvas.drawRect(xnear2+3,ynear2+3, xnear1-2 ,ydotselected[points[2]]-2,box);
-            }
 
         }
 

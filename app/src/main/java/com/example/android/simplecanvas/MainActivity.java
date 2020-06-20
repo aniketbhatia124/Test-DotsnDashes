@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         dd_no_of_plrs = (Spinner) findViewById(R.id.dd_no_of_plrs);
-        String[] no_of_plrs = new String[]{" ","2", "3", "4", "5", "6"};
+        String[] no_of_plrs = new String[]{" ","2", "3", "4"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, no_of_plrs);
         dd_no_of_plrs.setAdapter(adapter);
         startgame = findViewById(R.id.startgame);
@@ -40,15 +40,14 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (position) {
 
-                    case 0:   Toast.makeText(MainActivity.this, "Select Number of Players",Toast.LENGTH_SHORT).show();
-                                        break;
-                    case 1:
-                    case 2:
-                    case 3:
-                    case 4:
-                    case 5:
-                    case 6: SetActivity();
-                        break;
+                    case 0: Toast.makeText(MainActivity.this, "Select Number of Players",Toast.LENGTH_SHORT).show();
+                                break;
+                    case 1: entername(2);
+                                break;
+                    case 2:entername(3);
+                                break;
+                    case 3: entername(4);
+                                break;
 
                 }
             }
@@ -62,6 +61,17 @@ public class MainActivity extends AppCompatActivity {
 
     void  SetActivity()
          {
+        startgame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+
+            }
+        });
+
+    }
+    void entername(final int no_of_players){
         startgame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,15 +90,16 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                Intent intent = new Intent(MainActivity.this, gameActivity.class);
+                Intent intent = new Intent(MainActivity.this, EnternameActivity.class);
                 intent.putExtra("intX", intX);
                 intent.putExtra("intY", intY);
+                intent.putExtra("noofplayers",no_of_players);
                 startActivity(intent);
+
 
 
             }
         });
-
     }
 
 }

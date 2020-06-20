@@ -17,6 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".gameActivity"> </activity>
+        <activity android:name=".EnternameActivity"> </activity>
     </application>
 
 </manifest>
