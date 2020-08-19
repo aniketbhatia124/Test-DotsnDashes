@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     EditText edX;
     EditText edY;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,18 +60,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    void  SetActivity()
-         {
-        startgame.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-
-            }
-        });
-
-    }
     void entername(final int no_of_players){
         startgame.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, EnternameActivity.class);
                 intent.putExtra("intX", intX);
                 intent.putExtra("intY", intY);
-                intent.putExtra("noofplayers",no_of_players);
+                intent.putExtra("noofplayers", no_of_players);
                 startActivity(intent);
 
 
